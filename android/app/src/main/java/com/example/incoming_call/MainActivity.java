@@ -78,7 +78,7 @@ public class MainActivity extends FlutterActivity {
     int type = managedCursor.getColumnIndex( CallLog.Calls.TYPE );
     int date = managedCursor.getColumnIndex( CallLog.Calls.DATE);
     int duration = managedCursor.getColumnIndex( CallLog.Calls.DURATION);
-    sb.append( "Call Details :");
+    sb.append( "{\"tel\":[");
     while ( managedCursor.moveToNext() ) {
       String phNumber = managedCursor.getString( number );
       String callType = managedCursor.getString( type );
@@ -100,10 +100,13 @@ public class MainActivity extends FlutterActivity {
         dir = "MISSED";
         break;
       }
-      sb.append( "\nPhone Number:--- "+phNumber +" \nCall Type:--- "+dir+" \nCall duration in sec :--- "+callDuration );
-      sb.append("\n----------------------------------");
+      //sb.append( "\nPhone Number:--- "+phNumber +" \nCall Type:--- "+dir+" \nCall duration in sec :--- "+callDuration );
+      //sb.append("\n----------------------------------");
+      sb.append("\""+phNumber+"\",");
     }
     retResult=sb.toString();
+    retResult=retResult+"]}";
+    retResult=retResult.replace(",]","]");
     //managedCursor.close();
     //call.setText(sb);
     return retResult;

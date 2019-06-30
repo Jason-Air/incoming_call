@@ -37,11 +37,11 @@ class PlatformChannel extends StatefulWidget {
 class _PlatformChannelState extends State<PlatformChannel> {
   static const MethodChannel methodChannel =
       MethodChannel('com.example.incoming_call/calls');
-  static const EventChannel eventChannel =
-      EventChannel('com.example.incoming_call/charging');
+  // static const EventChannel eventChannel =
+  //     EventChannel('com.example.incoming_call/charging');
 
   String _calls = 'Calls: unknown.';
-  String _chargingStatus = 'Battery status: unknown.';
+  // String _chargingStatus = 'Battery status: unknown.';
 
   Future<void> _getCalls() async {
     String calls;
@@ -58,24 +58,24 @@ class _PlatformChannelState extends State<PlatformChannel> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    eventChannel.receiveBroadcastStream().listen(_onEvent, onError: _onError);
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   eventChannel.receiveBroadcastStream().listen(_onEvent, onError: _onError);
+  // }
 
-  void _onEvent(Object event) {
-    setState(() {
-      _chargingStatus =
-          "Battery status: ${event == 'charging' ? '' : 'dis'}charging.";
-    });
-  }
+  // void _onEvent(Object event) {
+  //   setState(() {
+  //     _chargingStatus =
+  //         "Battery status: ${event == 'charging' ? '' : 'dis'}charging.";
+  //   });
+  // }
 
-  void _onError(Object error) {
-    setState(() {
-      _chargingStatus = 'Battery status: unknown.';
-    });
-  }
+  // void _onError(Object error) {
+  //   setState(() {
+  //     _chargingStatus = 'Battery status: unknown.';
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +96,7 @@ class _PlatformChannelState extends State<PlatformChannel> {
               ),
             ],
           ),
-          Text(_chargingStatus),
+          //Text(_chargingStatus),
         ],
       ),
     );
