@@ -80,7 +80,7 @@ class _PlatformChannelState extends State<PlatformChannel> {
         try {
           ContactsService.addContact(cnt);
         } catch (e) {
-          print("hata: \n");
+          print("hata: Rehbere kaydedilemedi! \n");
         }
       }
     }
