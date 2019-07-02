@@ -23,6 +23,7 @@ import android.os.BatteryManager;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import java.util.List;
 
 import android.database.Cursor;
 import android.provider.CallLog;
@@ -78,7 +79,7 @@ public class MainActivity extends FlutterActivity {
     int type = managedCursor.getColumnIndex( CallLog.Calls.TYPE );
     int date = managedCursor.getColumnIndex( CallLog.Calls.DATE);
     int duration = managedCursor.getColumnIndex( CallLog.Calls.DURATION);
-    sb.append( "{\"tel\":[");
+    //sb.append( "{\"tel\":[");
     while ( managedCursor.moveToNext() ) {
       String phNumber = managedCursor.getString( number );
       String callType = managedCursor.getString( type );
@@ -105,8 +106,9 @@ public class MainActivity extends FlutterActivity {
       sb.append("\""+phNumber+"\",");
     }
     retResult=sb.toString();
-    retResult=retResult+"]}";
-    retResult=retResult.replace(",]","]");
+    retResult= retResult.substring(0, retResult.length()-1);
+    //retResult=retResult+"]}";
+    //retResult=retResult.replace(",]","]");
     //managedCursor.close();
     //call.setText(sb);
     return retResult;

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:contacts_service/contacts_service.dart';
 
 void main() => runApp(MyApp());
 
@@ -38,22 +38,52 @@ class _PlatformChannelState extends State<PlatformChannel> {
   static const MethodChannel methodChannel =
       MethodChannel('com.example.incoming_call/calls');
 
-
   String _calls = 'Calls: unknown.';
 
   Future<void> _getCalls() async {
     String calls;
+    bool success2 = false;
     try {
       final String result = await methodChannel.invokeMethod('getCalls');
       calls = result;
-    } catch (e) {//on PlatformException {
-      calls = 'Failed to get calls. '+ e.message;
+      success2 = true;
+    } catch (e) {
+      //on PlatformException {
+      calls = 'Failed to get calls. ';
+    }
+    if (success2) {
+      try {
+        await addContactIfNotExist(calls);
+      } catch (e) {
+        print("hata: \n" + e.toString());
+      }
     }
     setState(() {
       _calls = calls;
-      
       print(_calls);
     });
+  }
+
+  Future<void> addContactIfNotExist(String telNum) async {
+    List<String> nums = telNum.split(",").toList();
+    var contacts;
+    Contact cnt;
+
+    for (var n in nums) {
+      contacts = await ContactsService.getContactsForPhone(n);
+
+      if (contacts.length == 0) {
+        cnt = new Contact();
+        cnt.givenName = "Musteri" + DateTime.now().toString();
+        cnt.phones = [Item(label: "mobile", value: n)];
+
+        try {
+          ContactsService.addContact(cnt);
+        } catch (e) {
+          print("hata: \n");
+        }
+      }
+    }
   }
 
   @override
