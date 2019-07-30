@@ -1,4 +1,4 @@
-package com.example.incoming_call;
+package com.arayan.incoming_call;
 
 // import android.os.Bundle;
 // import io.flutter.app.FlutterActivity;
@@ -24,6 +24,8 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.database.Cursor;
 import android.provider.CallLog;
@@ -40,7 +42,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainActivity extends FlutterActivity {
-  private static final String CALLS = "com.example.incoming_call/calls";
+  private static final String CALLS = "com.arayan.incoming_call/calls";
   
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -79,13 +81,13 @@ public class MainActivity extends FlutterActivity {
     int type = managedCursor.getColumnIndex( CallLog.Calls.TYPE );
     int date = managedCursor.getColumnIndex( CallLog.Calls.DATE);
     int duration = managedCursor.getColumnIndex( CallLog.Calls.DURATION);
-    //sb.append( "{\"tel\":[");
+    sb.append( "[");
     while ( managedCursor.moveToNext() ) {
       String phNumber = managedCursor.getString( number );
       String callType = managedCursor.getString( type );
-      //String callDate = managedCursor.getString( date );
+      String callDate = managedCursor.getString( date );
       //String callDayTime = managedCursor.getString(callDate);
-      String callDuration = managedCursor.getString( duration );
+      //String callDuration = managedCursor.getString( duration );
       String dir = null;
       int dircode = Integer.parseInt( callType );
       switch( dircode ) {
@@ -103,10 +105,17 @@ public class MainActivity extends FlutterActivity {
       }
       //sb.append( "\nPhone Number:--- "+phNumber +" \nCall Type:--- "+dir+" \nCall duration in sec :--- "+callDuration );
       //sb.append("\n----------------------------------");
-      sb.append("\""+phNumber+"\",");
+      long seconds=Long.parseLong(callDate);
+      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm-ss-SS");
+      String dateString = formatter.format(new Date(seconds));
+
+      sb.append("{\"name\": \"Musteri "+dateString+"\",");
+      sb.append("\"number\" : \""+phNumber+"\",");
+      sb.append("\"category_id\":1},");
     }
     retResult=sb.toString();
     retResult= retResult.substring(0, retResult.length()-1);
+    retResult=retResult+"]";
     //retResult=retResult+"]}";
     //retResult=retResult.replace(",]","]");
     //managedCursor.close();

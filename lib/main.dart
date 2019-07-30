@@ -38,18 +38,21 @@ class PlatformChannel extends StatefulWidget {
 
 class _PlatformChannelState extends State<PlatformChannel> {
   static const MethodChannel methodChannel =
-      MethodChannel('com.example.incoming_call/calls');
+      MethodChannel('com.arayan.incoming_call/calls');
 
-  String _calls = 'Calls: unknown.';
+  //List<String> _calls;
+  var _calls;
   List data;
-  final String url = "https://ankaranakliyat.web.tr/rehber/api/customer/create.php";
+  //final String url = "https://ankaranakliyat.web.tr/rehber/api/customer/create.php";
+  final String url = "http://10.0.2.2/api/customer/create.php";
+  //final String getUrl="http://10.0.2.2/api/customer/read_single_number.php?number=";
 
-  // @override
-  // initState() {
-  //   super.initState();
-  //   // Add listeners to this class
-
-  // }
+  @override
+  initState() {
+    super.initState();
+    _getCalls();
+    // Add listeners to this class
+  }
 
   /// http request
   Future<String> getSWData(String postBody) async {
@@ -72,6 +75,7 @@ class _PlatformChannelState extends State<PlatformChannel> {
     try {
       final String result = await methodChannel.invokeMethod('getCalls');
       calls = result;
+      print(calls);
       success2 = true;
     } catch (e) {
       //on PlatformException {
@@ -79,19 +83,23 @@ class _PlatformChannelState extends State<PlatformChannel> {
       _showDialog("Hata",
           "Aramaları alırken hata oluştu. Arama kaydına erişim yetkilerini kontrol edin");
     }
-    if (success2) {
-      try {
-        await addContactIfNotExist(calls);
-        print("rehbere kaydedildi");
-        _showDialog("Başarılı", "Numaralar rehbere kaydedildi");
-      } catch (e) {
-        print("rehbere kaydedilemedi hata: \n" + e.toString());
-        _showDialog("Hata", "Rehbere kaydederken hata oluştu");
-      }
-    }
+    // if (success2) {
+    //   try {
+    //     await addContactIfNotExist(calls);
+    //     print("rehbere kaydedildi");
+    //     _showDialog("Başarılı", "Numaralar rehbere kaydedildi");
+    //   } catch (e) {
+    //     print("rehbere kaydedilemedi hata: \n" + e.toString());
+    //     _showDialog("Hata", "Rehbere kaydederken hata oluştu");
+    //   }
+    // }
     setState(() {
-      _calls = calls;
-      print(_calls);
+      // _calls = calls.split(",").map((tel)=>(
+      //   "{\"name\":\"Musteri"+DateTime.now().toString()+"\",\"number\":" + tel.toString() + ", \"category_id\":1}"
+      //   )
+      //   );
+      // print(_calls);
+      _calls = jsonDecode(calls);
     });
   }
 
@@ -100,13 +108,14 @@ class _PlatformChannelState extends State<PlatformChannel> {
     var contacts;
     Contact cnt;
     String customers = "";
+    print("nums: " + nums.toString());
     if (nums.length > 0) {
       for (var n in nums) {
         contacts = await ContactsService.getContactsForPhone(n);
 
         if (contacts.length == 0) {
           cnt = new Contact();
-          cnt.givenName = "Musteri" + DateTime.now().toString();
+          cnt.givenName = "Musteri " + DateTime.now().toString();
           cnt.phones = [Item(label: "mobile", value: n)];
 
           customers += "{ \"name\":\"" + cnt.givenName + "\",";
@@ -116,7 +125,7 @@ class _PlatformChannelState extends State<PlatformChannel> {
           try {
             ContactsService.addContact(cnt);
           } catch (e) {
-            print("hata: Rehbere kaydedilemedi! \n");
+            print("hata: Rehbere kaydedilemedi! \n" + e.toString());
             _showDialog("Hata", "Rehbere kaydederken hata oluştu");
           }
         }
@@ -173,36 +182,43 @@ class _PlatformChannelState extends State<PlatformChannel> {
       body: Column(
         children: <Widget>[
           ListView.builder(
-            itemCount: data == null ? 0 : data.length,
+            itemCount: _calls == null ? 0 : _calls.length,
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) {
-              return Container(
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Card(
-                        child: Container(
-                            padding: EdgeInsets.all(15.0),
-                            child: Row(
-                              children: <Widget>[
-                                Text(data[index]["message"],
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.black87)),
-                              ],
-                            )),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+              final item = _calls[index];
+              return Dismissible(
+                  key: Key(item["name"]),
+                  onDismissed: (direction) {
+                    setState(() {
+                      _calls.removeAt(index);
+                    });
+
+                    //  snackbar.
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text(item["name"] + " listeden çıkarıldı")));
+                  },
+                  // Show a red background as the item is swiped away.
+                  background: Container(
+                      color: Colors.red,
+                      child: Padding(
+                        child: Text(
+                          "Sil",
+                          style: TextStyle(color: Colors.white, fontSize: 24),
+                          textAlign: TextAlign.right,
+                        ),
+                        padding: EdgeInsets.all(20.0),
+                      )),
+                  child: ListTile(
+                    title: Text(item["name"]),
+                    subtitle: Text(item["number"]),
+                  ));
             },
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _getCalls,
+        onPressed: _getCalls, //(){addContactIfNotExist(_calls);},
         tooltip: 'Kaydet',
         child: Icon(Icons.save),
       ),
