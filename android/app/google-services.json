@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "94951393678",
+    "firebase_url": "https://arayani-kaydet.firebaseio.com",
+    "project_id": "arayani-kaydet",
+    "storage_bucket": "arayani-kaydet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:94951393678:android:00f75a4e5f0345a0",
+        "android_client_info": {
+          "package_name": "com.arayan.incoming_call"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "94951393678-58im3amag08tjqcvvcuhanao1klukfrb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFpcfu7R9Ifte2-h7xNXRiupn7J0_B7Wk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "94951393678-58im3amag08tjqcvvcuhanao1klukfrb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
